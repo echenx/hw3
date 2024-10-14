@@ -65,7 +65,7 @@ class MyHomePage extends StatelessWidget {
               child: SizedBox(
                 key: ValueKey<bool>(card.isFaceUp),
                 width: 500, 
-                height: 500, 
+                height: 500,
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
@@ -88,6 +88,7 @@ class MyHomePage extends StatelessWidget {
 
 class GameState extends ChangeNotifier {
   List<Card> cards = [];
+  int? firstFlippedIndex; 
 
   GameState() {
     _initializeCards();
@@ -112,8 +113,25 @@ class GameState extends ChangeNotifier {
   }
 
   void flipCard(int index) {
-    cards[index].isFaceUp = !cards[index].isFaceUp;
-    notifyListeners();
+    if (firstFlippedIndex == null) {
+      firstFlippedIndex = index;
+      cards[index].isFaceUp = true;
+      notifyListeners();
+    } else if (firstFlippedIndex != index) {
+      cards[index].isFaceUp = true;
+      notifyListeners();
+
+      if (cards[firstFlippedIndex!].frontImage == cards[index].frontImage) {
+        firstFlippedIndex = null; 
+      } else {
+        Future.delayed(const Duration(seconds: 1), () {
+          cards[firstFlippedIndex!].isFaceUp = false;
+          cards[index].isFaceUp = false;
+          firstFlippedIndex = null; 
+          notifyListeners();
+        });
+      }
+    }
   }
 }
 
