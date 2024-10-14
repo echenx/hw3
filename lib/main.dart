@@ -49,15 +49,32 @@ class MyHomePage extends StatelessWidget {
             onTap: () {
               gameState.flipCard(index);
             },
-            child: Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.transparent, // Set the color to transparent
-                image: DecorationImage(
-                  image: NetworkImage(
-                    card.isFaceUp ? card.frontImage : '/assets/cardback.jpg',
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              transitionBuilder: (Widget child, Animation<double> animation) {
+                final offsetAnimation = Tween<Offset>(
+                  begin: const Offset(0, 1), 
+                  end: Offset.zero, 
+                ).animate(animation);
+
+                return SlideTransition(
+                  position: offsetAnimation,
+                  child: child,
+                );
+              },
+              child: SizedBox(
+                key: ValueKey<bool>(card.isFaceUp),
+                width: 500, 
+                height: 500, 
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.transparent,
+                    image: DecorationImage(
+                      image: NetworkImage(
+                        card.isFaceUp ? card.frontImage : 'assets/cardback.jpg',
+                      ),
+                    ),
                   ),
                 ),
               ),
